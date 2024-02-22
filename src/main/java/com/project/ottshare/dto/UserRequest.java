@@ -8,12 +8,14 @@ import com.project.ottshare.validation.ValidationGroups.RangeGroups;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class UserRequest {
 
     private Long id;
