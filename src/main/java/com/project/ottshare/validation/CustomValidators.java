@@ -1,6 +1,6 @@
 package com.project.ottshare.validation;
 
-import com.project.ottshare.dto.UserRequest;
+import com.project.ottshare.dto.userDto.UserRequest;
 import com.project.ottshare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,5 +1,7 @@
 package com.project.ottshare.entity;
 
+import com.project.ottshare.dto.userDto.UserRequest;
+import com.project.ottshare.dto.userDto.UserSimpleRequest;
 import com.project.ottshare.enums.BankType;
 import com.project.ottshare.enums.Role;
 import jakarta.persistence.*;
@@ -60,4 +62,16 @@ public class User {
     @Column(name = "is_share_room", nullable = false, columnDefinition = "boolean default false")
     private boolean isShareRoom;
 
+
+    //비즈니스 로직
+
+    /**
+     * user정보 수정
+     * @param password
+     * @param nickname
+     */
+    public void update(String password, String nickname) {
+        this.password = password;
+        this.nickname = nickname;
+    }
 }

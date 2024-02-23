@@ -1,11 +1,10 @@
-package com.project.ottshare.dto;
+package com.project.ottshare.dto.userDto;
 
+import com.project.ottshare.entity.User;
 import com.project.ottshare.enums.Role;
-import com.project.ottshare.validation.ValidationGroups;
 import com.project.ottshare.validation.ValidationGroups.NotBlankGroups;
 import com.project.ottshare.validation.ValidationGroups.PatternGroups;
 import com.project.ottshare.validation.ValidationGroups.RangeGroups;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -38,6 +37,7 @@ public class UserRequest {
     private String email;
 
     @NotBlank(message = "휴대폰 번호는 필수 입력 값입니다.", groups = NotBlankGroups.class)
+    @Pattern(regexp = "^01(?:0|1|[6-9])[0-9]{7,8}$", message = "올바른 휴대폰 번호 형식이 아닙니다.", groups = PatternGroups.class)
     private String phoneNumber;
 
     @NotBlank(message = "계좌번호는 필수 입력 값입니다.", groups = NotBlankGroups.class)
@@ -47,5 +47,21 @@ public class UserRequest {
     private String accountHolder;
 
     private Role role;
+
+    public User toEntity() {
+        User user = User.builder()
+                .id(id)
+                .username(username)
+                .password(password)
+                .nickname(nickname)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .account(account)
+                .accountHolder(accountHolder)
+                .role(role)
+                .build();
+
+        return user;
+    }
 
 }
