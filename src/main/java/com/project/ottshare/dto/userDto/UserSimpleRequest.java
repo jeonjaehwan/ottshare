@@ -3,16 +3,18 @@ package com.project.ottshare.dto.userDto;
 import com.project.ottshare.validation.ValidationGroups;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Range;
 
 @Getter @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserSimpleRequest {
 
     private Long id;
+
+    private String username;
 
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.", groups = ValidationGroups.NotBlankGroups.class)
     @Range(min = 8, max = 16, message = "8~16자 사이로 입력해주세요.", groups = ValidationGroups.RangeGroups.class)

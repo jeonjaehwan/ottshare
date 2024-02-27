@@ -62,14 +62,19 @@ public class User {
     @Column(name = "is_share_room", nullable = false, columnDefinition = "boolean default false")
     private boolean isShareRoom;
 
+    public User(String username, String password, String nickname, String email, Role role) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.email = email;
+        this.role = role;
+    }
 
-    //비즈니스 로직
 
     /**
-     * user정보 수정
-     * @param password
-     * @param nickname
+     * 비즈니스 로직
      */
+    //user 정보(password, nickname) 수정
     public void update(String password, String nickname) {
         this.password = password;
         this.nickname = nickname;
