@@ -1,5 +1,7 @@
-package com.project.ottshare.service;
+package com.project.ottshare.service.user;
 
+import com.project.ottshare.config.SmsUtil;
+import com.project.ottshare.dto.userDto.FindUsernameRequest;
 import com.project.ottshare.dto.userDto.UserRequest;
 import com.project.ottshare.dto.userDto.UserResponse;
 import com.project.ottshare.dto.userDto.UserSimpleRequest;
@@ -12,7 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,6 +25,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+    private final SmsUtil smsconfig;
 
     @Override
     @Transactional
@@ -67,5 +71,18 @@ public class UserServiceImpl implements UserService{
 
         //user 삭제
         userRepository.delete(user);
+    }
+
+    @Override
+    public void sendSmsToFindEmail(FindUsernameRequest findUsernameRequest) {
+        String name = findUsernameRequest.getName();
+        String phoneNum = findUsernameRequest.getPhoneNumber().replaceAll("-", "");
+        User user = userRepository.findByNameAndPhoneNumber(name, phoneNum)
+                .orElseThrow(() -> new NoSuchElementException("회원이 존재하지 않습니다."));
+        String receiverEmail = user.getEmail();
+        String verificationCode = UUID.randomUUID().toString().substring(0, 6); // 무작위 인증 코드 생성
+        smsconfig.sendOne(phoneNum, verificationCode);
+
+//        redisUtil.setDataExpire(verificationCode, receiverEmail, 60 * 5L);
     }
 }

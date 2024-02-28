@@ -14,6 +14,8 @@ public class UserSimpleRequest {
 
     private Long id;
 
+    @NotBlank(message = "아이디는 필수 입력 값입니다.", groups = ValidationGroups.NotBlankGroups.class)
+    @Pattern(regexp = "^[a-zA-Z0-9]{4,20}$", message = "아이디는 특수문자를 제외한 4~20자 사이로 입력해주세요.", groups = ValidationGroups.PatternGroups.class)
     private String username;
 
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.", groups = ValidationGroups.NotBlankGroups.class)

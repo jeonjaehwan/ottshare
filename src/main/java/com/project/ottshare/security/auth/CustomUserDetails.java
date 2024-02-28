@@ -26,6 +26,10 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         this.attributes = attributes;
     }
 
+    public String getNickname() {
+        return user.getNickname();
+    }
+
     @Override
     public String getName() {
         return user.getUsername();

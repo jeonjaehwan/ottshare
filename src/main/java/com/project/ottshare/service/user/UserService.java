@@ -1,5 +1,6 @@
-package com.project.ottshare.service;
+package com.project.ottshare.service.user;
 
+import com.project.ottshare.dto.userDto.FindUsernameRequest;
 import com.project.ottshare.dto.userDto.UserRequest;
 import com.project.ottshare.dto.userDto.UserResponse;
 import com.project.ottshare.dto.userDto.UserSimpleRequest;
@@ -15,4 +16,6 @@ public interface UserService {
     void updateUser(UserSimpleRequest userSimpleRequest);
 
     void deleteUser(Long id);
+
+    void sendSmsToFindEmail(FindUsernameRequest findUsernameRequest);
 }

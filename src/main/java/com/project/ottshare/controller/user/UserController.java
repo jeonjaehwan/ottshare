@@ -1,14 +1,13 @@
-package com.project.ottshare.controller;
+package com.project.ottshare.controller.user;
 
 import com.project.ottshare.dto.userDto.LoginUserRequest;
 import com.project.ottshare.dto.userDto.UserRequest;
 import com.project.ottshare.dto.userDto.UserResponse;
-import com.project.ottshare.service.UserService;
+import com.project.ottshare.service.user.UserService;
 import com.project.ottshare.validation.CustomValidators;
 import com.project.ottshare.validation.ValidationSequence;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,10 +35,10 @@ public class UserController {
 
     @PostMapping("/join")
     public String joinProc(@Validated(ValidationSequence.class) @ModelAttribute("user") UserRequest dto,
-                                           BindingResult bindingResult,
-                                           Model model) {
+                           BindingResult bindingResult,
+                           Model model) {
         //중복 검사
-        validators.validateAll(dto, bindingResult);
+        validators.joinValidateAll(dto, bindingResult);
 
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult.getFieldError());
@@ -78,14 +77,11 @@ public class UserController {
     }
 
     /**
-     * 마이페이지
+     * 비밀번호 찾기
      */
-    @GetMapping("/{userId}")
-    public String myPage(@PathVariable("userId") Long userId,
-                         Model model) {
-        UserResponse user = userService.getUser(userId);
-        model.addAttribute("user", user);
+    @GetMapping("find-password")
+    public String findPasswordPage() {
 
-        return "user/myPage";
+        return "user/find-password";
     }
 }

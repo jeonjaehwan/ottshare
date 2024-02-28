@@ -28,6 +28,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Inquiry> inquiries = new ArrayList<>();
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     //중복x
     @Column(name = "username", nullable = false, unique = true)
     private String username;

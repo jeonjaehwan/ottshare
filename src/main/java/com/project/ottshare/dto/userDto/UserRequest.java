@@ -17,7 +17,8 @@ import org.hibernate.validator.constraints.Range;
 @AllArgsConstructor
 public class UserRequest {
 
-    private Long id;
+    @NotBlank(message = "이름은 필수 입력 값입니다", groups = NotBlankGroups.class)
+    private String name;
 
     @NotBlank(message = "아이디는 필수 입력 값입니다.", groups = NotBlankGroups.class)
     @Pattern(regexp = "^[a-zA-Z0-9]{4,20}$", message = "아이디는 특수문자를 제외한 4~20자 사이로 입력해주세요.", groups = PatternGroups.class)
@@ -50,7 +51,7 @@ public class UserRequest {
 
     public User toEntity() {
         User user = User.builder()
-                .id(id)
+                .name(name)
                 .username(username)
                 .password(password)
                 .nickname(nickname)
@@ -64,4 +65,9 @@ public class UserRequest {
         return user;
     }
 
+    public UserRequest(String username, String password, String nickname) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+    }
 }
