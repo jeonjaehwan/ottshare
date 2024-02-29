@@ -6,7 +6,9 @@ import com.project.ottshare.dto.userDto.UserRequest;
 import com.project.ottshare.dto.userDto.UserResponse;
 import com.project.ottshare.dto.userDto.UserSimpleRequest;
 import com.project.ottshare.entity.User;
+import com.project.ottshare.exception.SmsCertificationNumberMismatchException;
 import com.project.ottshare.exception.UserNotFoundException;
+import com.project.ottshare.repository.SmsCertificationDao;
 import com.project.ottshare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,8 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
-    private final SmsUtil smsconfig;
+    private final SmsUtil smsUtil;
+    private final SmsCertificationDao smsCertificationDao;
 
     @Override
     @Transactional
@@ -54,13 +57,29 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public String getUsername(String name, String phoneNumber) {
+        User user = userRepository.findByNameAndPhoneNumber(name, phoneNumber)
+                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+
+        return user.getUsername();
+    }
+
+    @Override
+    public String getPassword(String name, String username, String email) {
+        User user = userRepository.findByNameAndUsernameAndEmail(name, username, email)
+                .orElseThrow(() -> new UserNotFoundException("해당 유저를 찾을 수 없습니다."));
+
+        return user.getPassword();
+    }
+
+    @Override
     @Transactional
     public void updateUser(UserSimpleRequest userSimpleRequest) {
         User user = userRepository.findById(userSimpleRequest.getId())
                 .orElseThrow(() -> new UserNotFoundException(userSimpleRequest.getId()));
 
         //user 정보 수정
-        user.update(encoder.encode(userSimpleRequest.getPassword()), userSimpleRequest.getNickname());
+        user.update(userSimpleRequest.getUsername(), encoder.encode(userSimpleRequest.getPassword()), userSimpleRequest.getNickname());
     }
 
     @Override
@@ -73,6 +92,9 @@ public class UserServiceImpl implements UserService{
         userRepository.delete(user);
     }
 
+    /**
+     * 인증 번호 전송
+     */
     @Override
     public void sendSmsToFindEmail(FindUsernameRequest findUsernameRequest) {
         String name = findUsernameRequest.getName();
@@ -81,8 +103,27 @@ public class UserServiceImpl implements UserService{
                 .orElseThrow(() -> new NoSuchElementException("회원이 존재하지 않습니다."));
         String receiverEmail = user.getEmail();
         String verificationCode = UUID.randomUUID().toString().substring(0, 6); // 무작위 인증 코드 생성
-        smsconfig.sendOne(phoneNum, verificationCode);
+        smsUtil.sendOne(phoneNum, verificationCode);
 
-//        redisUtil.setDataExpire(verificationCode, receiverEmail, 60 * 5L);
+        //생성된 인증번호를 Redis에 저장
+        smsCertificationDao.createSmsCertification(phoneNum,verificationCode);
     }
+
+    /**
+     * 인증 번호 확인
+     */
+    @Override
+    public void verifySms(FindUsernameRequest findUsernameRequest) {
+        if (!isVerify(findUsernameRequest)) {
+            throw new SmsCertificationNumberMismatchException("인증번호가 일치하지 않습니다.");
+        }
+        smsCertificationDao.removeSmsCertification(findUsernameRequest.getPhoneNumber());
+    }
+
+    private boolean isVerify(FindUsernameRequest findUsernameRequest) {
+        return smsCertificationDao.hasKey(findUsernameRequest.getPhoneNumber()) &&
+                smsCertificationDao.getSmsCertification(findUsernameRequest.getPhoneNumber())
+                        .equals(findUsernameRequest.getCertificationNumber());
+    }
+
 }

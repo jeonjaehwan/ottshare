@@ -3,6 +3,7 @@ package com.project.ottshare.controller.user;
 import com.project.ottshare.dto.userDto.*;
 import com.project.ottshare.service.user.UserService;
 import com.project.ottshare.validation.CustomValidators;
+import com.project.ottshare.validation.ValidationSequence;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -12,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -82,27 +84,38 @@ public class UserApiController {
     /**
      * 인증번호 전송
      */
-    @PostMapping("/find-username")
+    @PostMapping("/send")
     public ResponseEntity<String> findUsername(@RequestBody FindUsernameRequest dto) {
         userService.sendSmsToFindEmail(dto);
+
         return ResponseEntity.ok("SMS가 성공적으로 전송되었습니다.");
     }
 
     /**
-     * 인증번호 확인
+     * 아이디 찾기
      */
-    @PostMapping("/verify-verification-code")
-    public ResponseEntity<String> verifyVerificationCode(@RequestBody VerificationCodeRequest request) {
-        String enteredVerificationCode = request.getVerificationCode(); // 사용자가 입력한 인증번호
+    @PostMapping("/find-username")
+    public ResponseEntity<String> verifyVerificationCode(@Validated(ValidationSequence.class) @RequestBody FindUsernameRequest dto) {
+        userService.verifySms(dto);
 
-        // TODO: redis사용하면 변경해야 함
-        String savedVerificationCode = "";
-
-        if (enteredVerificationCode.equals(savedVerificationCode)) {
-            return ResponseEntity.ok("인증번호가 일치합니다.");
-        } else {
-            return ResponseEntity.badRequest().body("인증번호가 일치하지 않습니다.");
-        }
+        // 사용자 아이디 찾기
+        String username = userService.getUsername(dto.getName(), dto.getPhoneNumber());
+        // 사용자 아이디 반환
+        return ResponseEntity.ok("아이디는 " + username + "입니다.");
     }
 
+    /**
+     * 비밀번호 찾기
+     */
+    @PostMapping("/find-password")
+    public ResponseEntity<String> findPassword(@RequestBody FindPasswordRequest request) {
+        String name = request.getName();
+        String username = request.getUsername();
+        String email = request.getEmail();
+
+        // 이름, 아이디, 이메일이 모두 일치하는 사용자의 비밀번호 찾기
+        String password = userService.getPassword(name, username, email);
+
+        return ResponseEntity.ok("비밀번호는 " + password + "입니다.");
+    }
 }

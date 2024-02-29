@@ -1,8 +1,6 @@
 package com.project.ottshare.controller.user;
 
-import com.project.ottshare.dto.userDto.LoginUserRequest;
-import com.project.ottshare.dto.userDto.UserRequest;
-import com.project.ottshare.dto.userDto.UserResponse;
+import com.project.ottshare.dto.userDto.*;
 import com.project.ottshare.service.user.UserService;
 import com.project.ottshare.validation.CustomValidators;
 import com.project.ottshare.validation.ValidationSequence;
@@ -26,13 +24,6 @@ public class UserController {
     /**
      * 회원가입
      */
-    @GetMapping("/join")
-    public String join(Model model) {
-        model.addAttribute("user", new UserRequest());
-
-        return "user/join";
-    }
-
     @PostMapping("/join")
     public String joinProc(@Validated(ValidationSequence.class) @ModelAttribute("user") UserRequest dto,
                            BindingResult bindingResult,
@@ -55,16 +46,6 @@ public class UserController {
     }
 
     /**
-     * 로그인
-     */
-    @GetMapping("/login")
-    public String login(Model model) {
-        model.addAttribute("user", new LoginUserRequest());
-
-        return "user/login";
-    }
-
-    /**
      * 회원정보 수정
      */
     @GetMapping("/{userId}/modification")
@@ -74,14 +55,5 @@ public class UserController {
         model.addAttribute("user", user);
 
         return "user/modify";
-    }
-
-    /**
-     * 비밀번호 찾기
-     */
-    @GetMapping("find-password")
-    public String findPasswordPage() {
-
-        return "user/find-password";
     }
 }

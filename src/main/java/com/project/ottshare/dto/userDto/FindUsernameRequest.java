@@ -19,4 +19,8 @@ public class FindUsernameRequest {
     @NotBlank(message = "휴대폰 번호는 필수 입력 값입니다.", groups = ValidationGroups.NotBlankGroups.class)
     @Pattern(regexp = "^01(?:0|1|[6-9])[0-9]{7,8}$", message = "올바른 휴대폰 번호 형식이 아닙니다.", groups = ValidationGroups.PatternGroups.class)
     private String phoneNumber;
+
+    @NotBlank(message = "인증번호는 필수 입력 값입니다.", groups = ValidationGroups.NotBlankGroups.class)
+    @Pattern(regexp = "^.{6}$", message = "인증번호는 6자리의 문자로 이루어져야 합니다.")
+    private String certificationNumber;
 }

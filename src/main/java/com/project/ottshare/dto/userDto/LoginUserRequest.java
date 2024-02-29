@@ -2,11 +2,16 @@ package com.project.ottshare.dto.userDto;
 
 import com.project.ottshare.validation.ValidationGroups;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import static com.project.ottshare.validation.ValidationGroups.*;
 
-@Getter
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginUserRequest {
 
     @NotBlank(groups = NotBlankGroups.class, message = "아이디 입력은 필수입니다.")

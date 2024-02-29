@@ -11,6 +11,7 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+
 #  security:
 #    oauth2:
 #      client:
@@ -47,6 +48,12 @@ logging:
     org:
       springframework:
         security=DEBUG:
+
+redis:
+  host: localhost
+  port: 6379
+  repositories:
+    enabled: false
 
 coolsms:
   api:

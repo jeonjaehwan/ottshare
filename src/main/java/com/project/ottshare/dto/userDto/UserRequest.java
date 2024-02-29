@@ -1,6 +1,7 @@
 package com.project.ottshare.dto.userDto;
 
 import com.project.ottshare.entity.User;
+import com.project.ottshare.enums.BankType;
 import com.project.ottshare.enums.Role;
 import com.project.ottshare.validation.ValidationGroups.NotBlankGroups;
 import com.project.ottshare.validation.ValidationGroups.PatternGroups;
@@ -46,6 +47,8 @@ public class UserRequest {
 
     @NotBlank(message = "예금주는 필수 입력 값입니다.", groups = NotBlankGroups.class)
     private String accountHolder;
+
+    private BankType bank;
 
     private Role role;
 
