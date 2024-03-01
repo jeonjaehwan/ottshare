@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum OttType {
 
     NETFLIX("넷플릭스", 9000),
-    TIVING("티빙", 4250),
+    TVING("티빙", 4250),
     DISNEY_PLUS("디즈니플러스", 3475);
 
     private final String value;

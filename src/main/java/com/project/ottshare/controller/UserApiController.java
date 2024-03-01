@@ -1,4 +1,4 @@
-package com.project.ottshare.controller.user;
+package com.project.ottshare.controller;
 
 import com.project.ottshare.dto.userDto.*;
 import com.project.ottshare.service.user.UserService;
@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +23,35 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
-@Slf4j
 public class UserApiController {
 
     private final UserService userService;
     private final CustomValidators validators;
+
+    /**
+     * 회원가입
+     */
+    @PostMapping("/join")
+    public ResponseEntity<?> joinUser(@Validated(ValidationSequence.class) @RequestBody UserRequest dto,
+                                           BindingResult bindingResult) {
+        //유효성 검사
+        validators.joinValidateAll(dto, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            // 유효성 검사 실패 시 오류 메시지 반환
+            List<String> errorMessages = bindingResult.getAllErrors()
+                    .stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest().body(errorMessages);
+        }
+
+        // 회원 저장
+        userService.joinUser(dto);
+
+        return ResponseEntity.ok("User registered successfully");
+    }
 
     /**
      * 마이페이지
@@ -39,9 +64,16 @@ public class UserApiController {
     }
 
     /**
-     * 회원 수정
+     * 회원정보 수정
      * todo: 테스트 필요
      */
+    @GetMapping("/{userId}/modification")
+    public ResponseEntity<UserResponse> modify(@PathVariable("userId") Long userId) {
+        UserResponse user = userService.getUser(userId);
+
+        return ResponseEntity.ok(user);
+    }
+
     @PatchMapping("/{userId}")
     public ResponseEntity<?> modify(@PathVariable("userId") Long id,
                                     @RequestBody UserSimpleRequest dto,
