@@ -76,7 +76,7 @@ public class UserApiController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<?> modify(@PathVariable("userId") Long id,
-                                    @RequestBody UserSimpleRequest dto,
+                                    @Validated(ValidationSequence.class) @RequestBody UserSimpleRequest dto,
                                     BindingResult bindingResult) {
         UserRequest userRequest = new UserRequest(dto.getUsername(), dto.getPassword(), dto.getNickname());
 
@@ -117,7 +117,7 @@ public class UserApiController {
      * 인증번호 전송
      */
     @PostMapping("/send")
-    public ResponseEntity<String> findUsername(@RequestBody FindUsernameRequest dto) {
+    public ResponseEntity<String> findUsername(@Validated(ValidationSequence.class) @RequestBody FindUsernameRequest dto) {
         userService.sendSmsToFindEmail(dto);
 
         return ResponseEntity.ok("SMS가 성공적으로 전송되었습니다.");
@@ -129,7 +129,6 @@ public class UserApiController {
     @PostMapping("/find-username")
     public ResponseEntity<String> verifyVerificationCode(@Validated(ValidationSequence.class) @RequestBody FindUsernameRequest dto) {
         userService.verifySms(dto);
-
         // 사용자 아이디 찾기
         String username = userService.getUsername(dto.getName(), dto.getPhoneNumber());
         // 사용자 아이디 반환
@@ -140,10 +139,10 @@ public class UserApiController {
      * 비밀번호 찾기
      */
     @PostMapping("/find-password")
-    public ResponseEntity<String> findPassword(@RequestBody FindPasswordRequest request) {
-        String name = request.getName();
-        String username = request.getUsername();
-        String email = request.getEmail();
+    public ResponseEntity<String> findPassword(@Validated(ValidationSequence.class) @RequestBody FindPasswordRequest dto) {
+        String name = dto.getName();
+        String username = dto.getUsername();
+        String email = dto.getEmail();
 
         // 이름, 아이디, 이메일이 모두 일치하는 사용자의 비밀번호 찾기
         String password = userService.getPassword(name, username, email);

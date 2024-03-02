@@ -116,8 +116,9 @@ public class UserServiceImpl implements UserService{
     public void verifySms(FindUsernameRequest findUsernameRequest) {
         if (!isVerify(findUsernameRequest)) {
             throw new SmsCertificationNumberMismatchException("인증번호가 일치하지 않습니다.");
+        } else {
+            smsCertificationDao.removeSmsCertification(findUsernameRequest.getPhoneNumber());
         }
-        smsCertificationDao.removeSmsCertification(findUsernameRequest.getPhoneNumber());
     }
 
     private boolean isVerify(FindUsernameRequest findUsernameRequest) {
